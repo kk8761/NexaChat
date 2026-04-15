@@ -1,3 +1,4 @@
+Live Link-https://stunning-cassata-3160d6.netlify.app/
 # 🚀 NexaChat — Real-Time Chat Application
 
 A futuristic, production-ready real-time chat application with WebSocket messaging, OTP authentication, and Google OAuth.
