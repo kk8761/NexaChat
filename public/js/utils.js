@@ -4,7 +4,7 @@
 
 // Detect environment and set API base URL
 // For hosting: Replace with your actual backend URL (e.g., from Render or Railway)
-const REMOTE_API = ''; // e.g. 'https://nexachat-backend.onrender.com'
+const REMOTE_API = 'https://nexachat-backend-0q4q.onrender.com';
 const API_BASE = REMOTE_API || window.location.origin;
 
 // ── Auth Token Management ──
