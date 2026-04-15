@@ -2,6 +2,7 @@
 services:
   - type: web
     name: nexachat-backend
+    plan: free
     env: node
     buildCommand: npm install
     startCommand: npm start
