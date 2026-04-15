@@ -1,0 +1,18 @@
+# Render deployment configuration for NexaChat Backend
+services:
+  - type: web
+    name: nexachat-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: OTP_MODE
+        value: demo
+    rootDir: server
+    healthCheckPath: /api/health
