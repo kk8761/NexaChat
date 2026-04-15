@@ -25,9 +25,19 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  initUI();
-  initSocket();
-  loadRooms();
+  try {
+    initUI();
+  } catch (e) { console.error('UI Init Error:', e); }
+
+  try {
+    initSocket();
+  } catch (e) { console.error('Socket Init Error:', e); }
+
+  try {
+    loadRooms();
+  } catch (e) { console.error('Load Rooms Error:', e); }
+
+  // Always init listeners last to ensure they are attached
   initEventListeners();
   
   // Init Mood Engine
@@ -75,7 +85,7 @@ function initUI() {
 // SOCKET.IO CONNECTION & EVENTS
 // ═══════════════════════════════════════════════════
 function initSocket() {
-  socket = io({
+  socket = io(API_BASE, {
     auth: { token: getToken() },
     reconnection: true,
     reconnectionAttempts: 10,
@@ -687,7 +697,7 @@ async function searchUsers(query) {
     container.innerHTML = '';
     data.users.forEach(user => {
       const el = document.createElement('div');
-      el.className = 'user-search-item';
+      el.className = 'search-result-item'; // Matches CSS class
       el.innerHTML = `
         <img src="${escapeHtml(user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName)}&background=0a0a2e&color=00f5ff&size=64`)}" alt="">
         <div>
