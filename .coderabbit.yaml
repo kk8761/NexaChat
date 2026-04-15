@@ -1,0 +1,24 @@
+# CodeRabbit Configuration
+# This file configures CodeRabbit, an AI-powered code reviewer.
+# https://coderabbit.ai
+language: "en-US"
+early_access: false
+reviews:
+  profile: "standard"
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_placeholder: "@coderabbitai summary"
+  auto_review:
+    enabled: true
+    drafts: false
+  tools:
+    ast-grep:
+      enabled: false
+  # You can customize the review guidelines for your "NexaChat" project here
+  custom_instructions: |
+    - We are building NexaChat, a real-time NodeJS/Vanilla Javascript chat app.
+    - We strictly follow the 'Elegant Minimalist Dark + Glassmorphism' design.
+    - Assume ES6+ vanilla syntax. No React/Vue code suggestions.
+    - Focus heavily on security (XSS in chat) and performance (SocketIO leaks).
+chat:
+  auto_reply: true

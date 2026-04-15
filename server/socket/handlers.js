@@ -51,7 +51,8 @@ function setupSocketHandlers(io) {
     });
 
     // ──── SEND MESSAGE (concurrent-safe) ────
-    socket.on('send-message', async ({ roomId, content, type = 'text' }) => {
+    socket.on('send-message', async (reqData) => {
+      const { roomId, content, type = 'text' } = reqData;
       try {
         if (!content || !content.trim()) return;
 
@@ -62,12 +63,12 @@ function setupSocketHandlers(io) {
         // Sanitize content
         const sanitizedContent = content.trim().slice(0, 5000);
 
-        // Save message to DB (atomic operation — safe for concurrency)
         const message = new Message({
           sender: user._id,
           room: roomId,
           content: sanitizedContent,
           type,
+          file: type === 'file' ? reqData.file : undefined,
           readBy: [{ user: user._id }],
         });
         await message.save();
@@ -94,6 +95,7 @@ function setupSocketHandlers(io) {
             room: roomId,
             content: message.content,
             type: message.type,
+            file: message.file,
             readBy: message.readBy,
             createdAt: message.createdAt,
           },

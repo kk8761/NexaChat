@@ -20,8 +20,15 @@ const messageSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['text', 'image', 'system', 'emoji'],
+    enum: ['text', 'image', 'system', 'emoji', 'file'],
     default: 'text',
+  },
+  file: {
+    url: String,
+    name: String,
+    size: Number,
+    extension: String,
+    mimeType: String
   },
   reactions: [{
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

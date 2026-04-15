@@ -40,6 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Always init listeners last to ensure they are attached
   initEventListeners();
   
+  // File Upload Listeners
+  const attachBtn = document.getElementById('attach-btn');
+  const fileInput = document.getElementById('file-input');
+  if (attachBtn && fileInput) {
+    attachBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', handleFileSelect);
+  }
+  
   // Init Mood Engine
   const savedMood = localStorage.getItem('nexa-mood') || 'default';
   document.documentElement.setAttribute('data-mood', savedMood);
@@ -455,7 +463,7 @@ function appendMessage(msg, animate = true) {
   el.innerHTML = `
     ${!isSent ? `<div class="message-sender-name">${escapeHtml(senderName)}</div>` : ''}
     <div class="message-content">
-      <div class="message-text">${formatMessageContent(msg.content)}</div>
+      ${msg.type === 'file' ? renderFileCard(msg.file) : `<div class="message-text">${formatMessageContent(msg.content)}</div>`}
       <div class="message-meta">
         <span class="message-time">${formatMessageTime(msg.createdAt)}</span>
         ${isSent ? `<span class="message-status ${msg.readBy && msg.readBy.length > 1 ? 'read' : ''}">${msg.readBy && msg.readBy.length > 1 ? '👀' : '✓✓'}</span>` : ''}
@@ -599,6 +607,104 @@ function sendMessage() {
     socket.emit('stop-typing', { roomId: currentRoomId });
     isTyping = false;
   }
+}
+
+// ── File Upload ──
+async function handleFileSelect(event) {
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
+
+  for (const file of files) {
+    await uploadFile(file);
+  }
+  
+  // Reset input
+  event.target.value = '';
+}
+
+async function uploadFile(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  // Show a "sending" state
+  showToast(`Uploading ${file.name}...`, 'info');
+
+  try {
+    const response = await fetch(`${API_BASE}/api/media/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getToken()}`
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    // Send the message with file data via socket
+    socket.emit('send-message', {
+      roomId: currentRoomId,
+      content: `Sent a file: ${file.name}`,
+      type: 'file',
+      file: data.file
+    });
+
+  } catch (error) {
+    console.error('Upload failed:', error);
+    showToast(`Failed to upload ${file.name}`, 'error');
+  }
+}
+
+function renderFileCard(file) {
+  if (!file) return '<div class="message-text">[File error]</div>';
+  
+  const isImage = ['.jpg', '.jpeg', '.png', '.gif', '.svg'].includes(file.extension.toLowerCase());
+  
+  if (isImage) {
+    return `
+      <div class="message-image-wrapper">
+        <img src="${API_BASE}${file.url}" class="message-image" alt="${escapeHtml(file.name)}" loading="lazy">
+        <a href="${API_BASE}${file.url}" download="${escapeHtml(file.name)}" class="image-download-overlay" title="Download">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        </a>
+      </div>
+    `;
+  }
+
+  const icon = getFileIcon(file.extension);
+  return `
+    <div class="file-card">
+      <div class="file-icon">${icon}</div>
+      <div class="file-info">
+        <div class="file-name">${escapeHtml(file.name)}</div>
+        <div class="file-size">${formatFileSize(file.size)}</div>
+      </div>
+      <a href="${API_BASE}${file.url}" download="${escapeHtml(file.name)}" class="file-download-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      </a>
+    </div>
+  `;
+}
+
+function getFileIcon(ext) {
+  const e = ext.toLowerCase();
+  if (['.pdf'].includes(e)) return '📄';
+  if (['.doc', '.docx', '.txt'].includes(e)) return '📝';
+  if (['.ppt', '.pptx'].includes(e)) return '📊';
+  if (['.zip', '.rar', '.7z'].includes(e)) return '📦';
+  if (['.jpg', '.jpeg', '.png', '.gif', '.svg'].includes(e)) return '🖼️';
+  return '📎';
+}
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
 // ── Update Room in Sidebar ──

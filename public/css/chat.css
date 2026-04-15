@@ -509,6 +509,130 @@ body, html {
   background: var(--accent-blue-hover);
 }
 
+.message-text {
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+/* File Sharing Card */
+.file-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin-bottom: 8px;
+  min-width: 220px;
+  transition: var(--transition-base);
+}
+
+.file-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--neon-cyan-faded);
+  transform: translateY(-2px);
+}
+
+.file-icon {
+  font-size: 1.8rem;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.file-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.file-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
+}
+
+.file-size {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.file-download-btn {
+  color: var(--neon-cyan);
+  padding: 8px;
+  border-radius: 50%;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.file-download-btn:hover {
+  background: var(--neon-cyan-faded);
+  transform: scale(1.1);
+}
+
+/* Image Sharing */
+.message-image-wrapper {
+  position: relative;
+  max-width: 320px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  background: var(--bg-tertiary);
+  margin-bottom: 4px;
+}
+
+.message-image {
+  width: 100%;
+  display: block;
+  border-radius: var(--radius-md);
+  transition: transform 0.3s ease;
+}
+
+.image-download-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: white;
+  text-decoration: none;
+}
+
+.message-image-wrapper:hover .image-download-overlay {
+  opacity: 1;
+}
+
+.message-image-wrapper:hover .message-image {
+  transform: scale(1.05);
+}
+
+.received .message-image-wrapper {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.sent .message-image-wrapper {
+  border-color: var(--neon-cyan-faded);
+}
+
+.message.received .file-card {
+  background: rgba(255, 255, 255, 0.03);
+}
+
 /* Messages Container */
 .messages-container {
   flex: 1;

@@ -12,6 +12,7 @@ const { setupSocketHandlers } = require('./socket/handlers');
 const authRoutes = require('./routes/auth');
 const roomRoutes = require('./routes/rooms');
 const storyRoutes = require('./routes/stories');
+const mediaRoutes = require('./routes/media');
 
 const app = express();
 const server = http.createServer(app);
@@ -45,6 +46,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/stories', storyRoutes);
+app.use('/api/media', mediaRoutes);
 
 // ──── Global Error Handler ────
 app.use((err, req, res, next) => {
